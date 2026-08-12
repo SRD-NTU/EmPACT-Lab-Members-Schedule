@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EmPACT Lab Members Weekly Schedule</title>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --border: #dbe3ee;
+      --accent: #2563eb;
+      --text: #172033;
+      --muted: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+      padding: 32px 16px;
+    }
+
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    section:first-child,
+    .filters,
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      letter-spacing: -0.03em;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    section:first-child {
+      padding: 24px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr);
+      gap: 20px;
+    }
+
+    .filters {
+      display: grid;
+      gap: 10px;
+      align-content: start;
+      padding: 18px;
+    }
+
+    .filters-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .filters-header h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .select-all {
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .person-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .filter-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface-soft);
+    }
+
+    .filter-item input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+    }
+
+    .filter-name {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      border: 2px solid transparent;
+    }
+
+    .filter-empty {
+      color: var(--muted);
+      padding: 10px 12px;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      background: var(--surface-soft);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      padding: 10px;
+    }
+
+    .planner-grid {
+      min-width: 840px;
+      display: grid;
+      grid-template-columns: 90px repeat(5, minmax(140px, 1fr));
+      column-gap: 0;
+      row-gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .planner-header,
+    .planner-corner {
+      background: var(--surface-soft);
+      padding: 12px 10px;
+      text-align: center;
+      font-weight: 600;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .planner-header.current-day {
+      background: #e0f2fe;
+      color: #0f172a;
+    }
+
+    .planner-header:last-child {
+      border-right: 0;
+    }
+
+    .time-column {
+      background: #fbfdff;
+      border-right: 1px solid var(--border);
+      position: relative;
+    }
+
+    .time-label {
+      height: 44px;
+      padding: 0 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-align: center;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      transform: translateY(-9px);
+      background: transparent;
+    }
+
+    .time-label:last-child {
+      border-bottom: 0;
+    }
+
+    .day-column {
+      position: relative;
+      min-height: 968px;
+      border-right: 1px solid var(--border);
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          #ffffff 0,
+          #ffffff 43px,
+          var(--border) 43px,
+          var(--border) 44px
+        );
+    }
+
+    .day-column.current-day {
+      background:
+        linear-gradient(to bottom, rgba(186, 230, 253, 0.22), rgba(186, 230, 253, 0.22)),
+        repeating-linear-gradient(
+          to bottom,
+          #ffffff 0,
+          #ffffff 43px,
+          var(--border) 43px,
+          var(--border) 44px
+        );
+    }
+
+    .day-column:last-child {
+      border-right: 0;
+    }
+
+    .planner-body {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 90px repeat(5, minmax(140px, 1fr));
+      position: relative;
+    }
+
+    .day-lane {
+      position: absolute;
+      top: 0;
+      right: 10px;
+      bottom: 0;
+      left: 10px;
+    }
+
+    .schedule-card {
+      position: absolute;
+      padding: 0 1px;
+    }
+
+    .schedule-card-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      min-height: 36px;
+      padding: 8px 6px;
+      border-radius: 10px;
+      color: var(--text);
+      border: 2px solid transparent;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .schedule-card-text {
+      display: inline-block;
+      transform: rotate(90deg);
+      white-space: nowrap;
+    }
+
+    .current-time-line {
+      position: absolute;
+      left: 90px;
+      right: 0;
+      height: 2px;
+      background: #ef4444;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    .current-time-line::before {
+      content: "";
+      position: absolute;
+      left: -4px;
+      top: 50%;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #ef4444;
+      transform: translateY(-50%);
+    }
+
+    @media (max-width: 920px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section>
+      <h1>EmPACT Lab Members Schedule</h1>
+    </section>
+
+    <div class="layout">
+      <aside class="filters">
+        <div class="filters-header">
+          <h2>People</h2>
+          <button class="select-all" id="selectAllButton" type="button">Select All</button>
+        </div>
+        <div class="person-list" id="personFilters">
+          <p class="filter-empty">No people added yet. Send me the schedules and I will populate them.</p>
+        </div>
+      </aside>
+
+      <section class="table-wrap">
+        <div class="planner-grid" id="timetable"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+    const timeSlots = [
+      "9:00 AM",
+      "9:30 AM",
+      "10:00 AM",
+      "10:30 AM",
+      "11:00 AM",
+      "11:30 AM",
+      "12:00 PM",
+      "12:30 PM",
+      "1:00 PM",
+      "1:30 PM",
+      "2:00 PM",
+      "2:30 PM",
+      "3:00 PM",
+      "3:30 PM",
+      "4:00 PM",
+      "4:30 PM",
+      "5:00 PM",
+      "5:30 PM",
+      "6:00 PM",
+      "6:30 PM",
+      "7:00 PM",
+      "7:30 PM"
+    ];
+    const timeBoundaries = [...timeSlots, "8:00 PM"];
+
+    const schedules = [
+      { person: "Zinan", day: "Monday", start: "2:30 PM", end: "5:30 PM", activity: "Scheduled" },
+      { person: "Zinan", day: "Wednesday", start: "9:30 AM", end: "12:30 PM", activity: "Scheduled" },
+      { person: "Zinan", day: "Wednesday", start: "2:00 PM", end: "5:00 PM", activity: "Scheduled" },
+      { person: "Zinan", day: "Thursday", start: "3:00 PM", end: "4:30 PM", activity: "Scheduled" },
+      { person: "Soumya", day: "Wednesday", start: "9:30 AM", end: "12:30 PM", activity: "Scheduled" },
+      { person: "Soumya", day: "Wednesday", start: "6:30 PM", end: "8:00 PM", activity: "Scheduled" },
+      { person: "Haitian", day: "Wednesday", start: "10:00 AM", end: "12:00 PM", activity: "Scheduled" },
+      { person: "Haitian", day: "Wednesday", start: "2:30 PM", end: "5:00 PM", activity: "Scheduled" },
+      { person: "Kaimin", day: "Wednesday", start: "10:30 AM", end: "1:30 PM", activity: "Scheduled" },
+      { person: "Like", day: "Monday", start: "6:30 PM", end: "8:00 PM", activity: "Scheduled" },
+      { person: "Like", day: "Tuesday", start: "6:30 PM", end: "8:00 PM", activity: "Scheduled" },
+      { person: "Like", day: "Wednesday", start: "6:30 PM", end: "8:00 PM", activity: "Scheduled" },
+      { person: "Shriram", day: "Thursday", start: "10:00 AM", end: "1:00 PM", activity: "Scheduled" },
+      { person: "Soumya", day: "Thursday", start: "11:30 AM", end: "1:30 PM", activity: "Scheduled" },
+      { person: "Thai", day: "Thursday", start: "11:30 AM", end: "1:30 PM", activity: "Scheduled" },
+      { person: "Like", day: "Friday", start: "6:30 PM", end: "8:00 PM", activity: "Scheduled" }
+    ];
+    const personColors = {
+      Zinan: { background: "#dbeafe", border: "#1d4ed8" },
+      Soumya: { background: "#dcfce7", border: "#15803d" },
+      Thai: { background: "#fef3c7", border: "#b45309" },
+      Haitian: { background: "#fce7f3", border: "#be185d" },
+      Kaimin: { background: "#ede9fe", border: "#6d28d9" },
+      Like: { background: "#fee2e2", border: "#dc2626" },
+      Shriram: { background: "#cffafe", border: "#0f766e" }
+    };
+
+    const slotHeight = 44;
+    const dayStartHour = 9;
+    const dayEndHour = 20;
+    const timetable = document.getElementById("timetable");
+    const personFilters = document.getElementById("personFilters");
+    const selectAllButton = document.getElementById("selectAllButton");
+
+    function renderTable() {
+      timetable.innerHTML = "";
+      const visiblePeople = getVisiblePeople();
+      const visibleSchedules = schedules.filter((item) => visiblePeople.includes(item.person));
+
+      const corner = document.createElement("div");
+      corner.className = "planner-corner";
+      corner.textContent = "Time";
+      timetable.appendChild(corner);
+
+      days.forEach((day) => {
+        const header = document.createElement("div");
+        header.className = "planner-header";
+        header.textContent = day;
+        header.dataset.day = day;
+        timetable.appendChild(header);
+      });
+
+      const timeColumn = document.createElement("div");
+      timeColumn.className = "time-column";
+      timeSlots.forEach((time) => {
+        const label = document.createElement("div");
+        label.className = "time-label";
+        label.textContent = time === "9:00 AM" ? "" : time;
+        label.dataset.time = time;
+        timeColumn.appendChild(label);
+      });
+      const plannerBody = document.createElement("div");
+      plannerBody.className = "planner-body";
+      plannerBody.appendChild(timeColumn);
+
+      days.forEach((day) => {
+        const dayColumn = document.createElement("div");
+        dayColumn.className = "day-column";
+        dayColumn.dataset.day = day;
+        const dayLane = document.createElement("div");
+        dayLane.className = "day-lane";
+
+        const dayBlocks = visibleSchedules
+          .filter((item) => item.day === day)
+          .map((item) => ({
+            ...item,
+            startIndex: timeBoundaries.indexOf(item.start),
+            endIndex: timeBoundaries.indexOf(item.end)
+          }))
+          .sort((left, right) => left.startIndex - right.startIndex || left.endIndex - right.endIndex);
+
+        const laidOutBlocks = assignLanes(dayBlocks);
+
+        laidOutBlocks.forEach((block) => {
+          const colors = personColors[block.person] || {
+            background: "#e2e8f0",
+            border: "#94a3b8"
+          };
+          const card = document.createElement("div");
+          card.className = "schedule-card";
+          card.style.top = `${block.startIndex * slotHeight}px`;
+          card.style.height = `${(block.endIndex - block.startIndex) * slotHeight}px`;
+          card.style.left = `${(block.lane / block.totalLanes) * 100}%`;
+          card.style.width = `${(block.spanLanes / block.totalLanes) * 100}%`;
+
+          const inner = document.createElement("div");
+          inner.className = "schedule-card-inner";
+          inner.style.background = colors.background;
+          inner.style.borderColor = colors.border;
+
+          const text = document.createElement("span");
+          text.className = "schedule-card-text";
+          text.textContent = block.person;
+
+          inner.appendChild(text);
+
+          card.appendChild(inner);
+          dayLane.appendChild(card);
+        });
+
+        dayColumn.appendChild(dayLane);
+        plannerBody.appendChild(dayColumn);
+      });
+
+      timetable.appendChild(plannerBody);
+
+      updateCurrentTimeState();
+    }
+
+    function assignLanes(blocks) {
+      const results = [];
+      let currentGroup = [];
+      let currentGroupEnd = -1;
+
+      blocks.forEach((block, index) => {
+        if (currentGroup.length === 0 || block.startIndex < currentGroupEnd) {
+          currentGroup.push({ ...block });
+          currentGroupEnd = Math.max(currentGroupEnd, block.endIndex);
+        } else {
+          results.push(...layoutGroup(currentGroup));
+          currentGroup = [{ ...block }];
+          currentGroupEnd = block.endIndex;
+        }
+
+        if (index === blocks.length - 1 && currentGroup.length > 0) {
+          results.push(...layoutGroup(currentGroup));
+        }
+      });
+
+      return results;
+    }
+
+    function layoutGroup(group) {
+      const lanes = [];
+
+      group.forEach((block) => {
+        let laneIndex = lanes.findIndex((laneEnd) => laneEnd <= block.startIndex);
+
+        if (laneIndex === -1) {
+          laneIndex = lanes.length;
+          lanes.push(block.endIndex);
+        } else {
+          lanes[laneIndex] = block.endIndex;
+        }
+
+        block.lane = laneIndex;
+      });
+
+      const totalLanes = lanes.length;
+
+      return group.map((block) => {
+        let spanLanes = 1;
+
+        for (let nextLane = block.lane + 1; nextLane < totalLanes; nextLane += 1) {
+          const hasConflict = group.some(
+            (other) =>
+              other !== block &&
+              other.lane === nextLane &&
+              other.startIndex < block.endIndex &&
+              other.endIndex > block.startIndex
+          );
+
+          if (hasConflict) {
+            break;
+          }
+
+          spanLanes += 1;
+        }
+
+        return {
+          ...block,
+          totalLanes,
+          spanLanes
+        };
+      });
+    }
+
+    function renderFilters() {
+      const uniquePeople = [...new Set(schedules.map((item) => item.person))];
+
+      if (uniquePeople.length === 0) {
+        personFilters.innerHTML = '<p class="filter-empty">No people added yet. Send me the schedules and I will populate them.</p>';
+        return;
+      }
+
+      personFilters.innerHTML = "";
+
+      uniquePeople.forEach((person) => {
+        const colors = personColors[person] || {
+          background: "#e2e8f0",
+          border: "#94a3b8"
+        };
+        const label = document.createElement("label");
+        label.className = "filter-item";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = person;
+        checkbox.checked = true;
+        checkbox.addEventListener("change", handleFilterChange);
+
+        const text = document.createElement("span");
+        text.className = "filter-name";
+        text.textContent = person;
+        text.style.background = colors.background;
+        text.style.borderColor = colors.border;
+
+        label.appendChild(checkbox);
+        label.appendChild(text);
+        personFilters.appendChild(label);
+      });
+
+      updateSelectAllButton();
+    }
+
+    function getVisiblePeople() {
+      return [...personFilters.querySelectorAll('input[type="checkbox"]:checked')].map(
+        (checkbox) => checkbox.value
+      );
+    }
+
+    function getMinutesFromStartOfDay(date) {
+      return date.getHours() * 60 + date.getMinutes();
+    }
+
+    function getCurrentSlotIndex(minutes) {
+      const startMinutes = dayStartHour * 60;
+
+      if (minutes < startMinutes || minutes >= dayEndHour * 60) {
+        return -1;
+      }
+
+      return Math.floor((minutes - startMinutes) / 30);
+    }
+
+    function updateCurrentTimeState() {
+      const now = new Date();
+      const currentDay = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(now);
+      const currentMinutes = getMinutesFromStartOfDay(now);
+      const currentSlotIndex = getCurrentSlotIndex(currentMinutes);
+
+      timetable.querySelectorAll(".planner-header").forEach((header) => {
+        header.classList.toggle("current-day", header.dataset.day === currentDay);
+      });
+
+      timetable.querySelectorAll(".day-column").forEach((column) => {
+        column.classList.toggle("current-day", column.dataset.day === currentDay);
+      });
+
+      timetable.querySelectorAll(".current-time-line").forEach((line) => {
+        line.remove();
+      });
+
+      if (!days.includes(currentDay) || currentMinutes < dayStartHour * 60 || currentMinutes > dayEndHour * 60) {
+        return;
+      }
+
+      const plannerBody = timetable.querySelector(".planner-body");
+      if (!plannerBody) {
+        return;
+      }
+
+      const line = document.createElement("div");
+      line.className = "current-time-line";
+      line.style.top = `${((currentMinutes - dayStartHour * 60) / 30) * slotHeight}px`;
+      plannerBody.appendChild(line);
+    }
+
+    function handleFilterChange() {
+      updateSelectAllButton();
+      renderTable();
+    }
+
+    function updateSelectAllButton() {
+      const checkboxes = [...personFilters.querySelectorAll('input[type="checkbox"]')];
+      const allChecked = checkboxes.length > 0 && checkboxes.every((checkbox) => checkbox.checked);
+      selectAllButton.textContent = allChecked ? "Clear All" : "Select All";
+    }
+
+    selectAllButton.addEventListener("click", () => {
+      const checkboxes = [...personFilters.querySelectorAll('input[type="checkbox"]')];
+      const shouldCheckAll = checkboxes.some((checkbox) => !checkbox.checked);
+
+      checkboxes.forEach((checkbox) => {
+        checkbox.checked = shouldCheckAll;
+      });
+
+      updateSelectAllButton();
+      renderTable();
+    });
+
+    renderFilters();
+    renderTable();
+    updateCurrentTimeState();
+    setInterval(updateCurrentTimeState, 60000);
+
+    /*
+      Add schedule items in this format when you share them:
+      schedules.push({ person: "Asha", day: "Monday", start: "9:00 AM", end: "11:00 AM", activity: "Math Class" });
+    */
+  </script>
+</body>
+</html>
