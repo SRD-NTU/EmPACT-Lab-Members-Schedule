@@ -197,7 +197,7 @@
 
     .day-column {
       position: relative;
-      min-height: 968px;
+      min-height: 1144px;
       border-right: 1px solid var(--border);
       background:
         repeating-linear-gradient(
@@ -266,6 +266,17 @@
       display: inline-block;
       transform: rotate(90deg);
       white-space: nowrap;
+    }
+
+    .schedule-card-name {
+      font-weight: 700;
+    }
+
+    .schedule-card-course {
+      font-size: 12px;
+      font-weight: 500;
+      opacity: 0.7;
+      margin-left: 4px;
     }
 
     .current-time-line {
@@ -344,27 +355,37 @@
       "6:00 PM",
       "6:30 PM",
       "7:00 PM",
-      "7:30 PM"
+      "7:30 PM",
+      "8:00 PM",
+      "8:30 PM",
+      "9:00 PM",
+      "9:30 PM"
     ];
-    const timeBoundaries = [...timeSlots, "8:00 PM"];
+    const dayStartMinutes = 9 * 60;
+    const slotMinutes = 30;
 
     const schedules = [
-      { person: "Zinan", day: "Monday", start: "2:30 PM", end: "5:30 PM", activity: "Scheduled" },
-      { person: "Zinan", day: "Wednesday", start: "9:30 AM", end: "12:30 PM", activity: "Scheduled" },
-      { person: "Zinan", day: "Wednesday", start: "2:00 PM", end: "5:00 PM", activity: "Scheduled" },
-      { person: "Zinan", day: "Thursday", start: "3:00 PM", end: "4:30 PM", activity: "Scheduled" },
-      { person: "Soumya", day: "Wednesday", start: "9:30 AM", end: "12:30 PM", activity: "Scheduled" },
-      { person: "Soumya", day: "Wednesday", start: "6:30 PM", end: "8:00 PM", activity: "Scheduled" },
+      { person: "Zinan", day: "Monday", start: "2:30 PM", end: "5:30 PM", course: "HWG704" },
+      { person: "Zinan", day: "Wednesday", start: "9:30 AM", end: "12:30 PM", course: "EE6008 (TA)" },
+      { person: "Zinan", day: "Wednesday", start: "2:00 PM", end: "5:00 PM", course: "DIP EE02 (TA)" },
+      { person: "Zinan", day: "Thursday", start: "3:00 PM", end: "4:30 PM", course: "IE4422 (TA)" },
+      { person: "Soumya", day: "Wednesday", start: "9:30 AM", end: "12:30 PM", course: "EE6008 (TA)" },
+      { person: "Soumya", day: "Wednesday", start: "6:30 PM", end: "9:20 PM", course: "EE6222" },
       { person: "Haitian", day: "Wednesday", start: "10:00 AM", end: "12:00 PM", activity: "Scheduled" },
       { person: "Haitian", day: "Wednesday", start: "2:30 PM", end: "5:00 PM", activity: "Scheduled" },
-      { person: "Kaimin", day: "Wednesday", start: "10:30 AM", end: "1:30 PM", activity: "Scheduled" },
-      { person: "Like", day: "Monday", start: "6:30 PM", end: "8:00 PM", activity: "Scheduled" },
-      { person: "Like", day: "Tuesday", start: "6:30 PM", end: "8:00 PM", activity: "Scheduled" },
-      { person: "Like", day: "Wednesday", start: "6:30 PM", end: "8:00 PM", activity: "Scheduled" },
-      { person: "Shriram", day: "Thursday", start: "10:00 AM", end: "1:00 PM", activity: "Scheduled" },
-      { person: "Soumya", day: "Thursday", start: "11:30 AM", end: "1:30 PM", activity: "Scheduled" },
-      { person: "Thai", day: "Thursday", start: "11:30 AM", end: "1:30 PM", activity: "Scheduled" },
-      { person: "Like", day: "Friday", start: "6:30 PM", end: "8:00 PM", activity: "Scheduled" }
+      { person: "Kaimin", day: "Wednesday", start: "10:30 AM", end: "1:30 PM", course: "HWG704" },
+      { person: "Like", day: "Monday", start: "6:30 PM", end: "8:20 PM", course: "GP8001" },
+      { person: "Like", day: "Tuesday", start: "6:30 PM", end: "9:20 PM", course: "EE6407" },
+      { person: "Like", day: "Wednesday", start: "6:30 PM", end: "9:20 PM", course: "EE6221" },
+      { person: "Du", day: "Monday", start: "12:30 PM", end: "2:20 PM", course: "CE7491" },
+      { person: "Du", day: "Wednesday", start: "2:30 PM", end: "4:20 PM", course: "CE7491" },
+      { person: "Du", day: "Wednesday", start: "6:30 PM", end: "9:20 PM", course: "EE6427" },
+      { person: "Du", day: "Thursday", start: "9:30 AM", end: "11:20 AM", course: "HWG703" },
+      { person: "Du", day: "Friday", start: "6:30 PM", end: "9:20 PM", course: "CE6190" },
+      { person: "Shriram", day: "Thursday", start: "10:00 AM", end: "1:00 PM", course: "CE7457" },
+      { person: "Soumya", day: "Thursday", start: "11:30 AM", end: "1:00 PM", course: "HWG702" },
+      { person: "Thai", day: "Thursday", start: "11:30 AM", end: "1:00 PM", course: "HWG702" },
+      { person: "Like", day: "Friday", start: "6:30 PM", end: "9:20 PM", course: "CE6190" }
     ];
     const personColors = {
       Zinan: { background: "#dbeafe", border: "#1d4ed8" },
@@ -373,12 +394,13 @@
       Haitian: { background: "#fce7f3", border: "#be185d" },
       Kaimin: { background: "#ede9fe", border: "#6d28d9" },
       Like: { background: "#fee2e2", border: "#dc2626" },
-      Shriram: { background: "#cffafe", border: "#0f766e" }
+      Shriram: { background: "#cffafe", border: "#0f766e" },
+      Du: { background: "#ffedd5", border: "#ea580c" }
     };
 
     const slotHeight = 44;
     const dayStartHour = 9;
-    const dayEndHour = 20;
+    const dayEndMinutes = 22 * 60;
     const timetable = document.getElementById("timetable");
     const personFilters = document.getElementById("personFilters");
     const selectAllButton = document.getElementById("selectAllButton");
@@ -425,10 +447,10 @@
           .filter((item) => item.day === day)
           .map((item) => ({
             ...item,
-            startIndex: timeBoundaries.indexOf(item.start),
-            endIndex: timeBoundaries.indexOf(item.end)
+            startMinutes: parseTimeLabel(item.start),
+            endMinutes: parseTimeLabel(item.end)
           }))
-          .sort((left, right) => left.startIndex - right.startIndex || left.endIndex - right.endIndex);
+          .sort((left, right) => left.startMinutes - right.startMinutes || left.endMinutes - right.endMinutes);
 
         const laidOutBlocks = assignLanes(dayBlocks);
 
@@ -439,8 +461,8 @@
           };
           const card = document.createElement("div");
           card.className = "schedule-card";
-          card.style.top = `${block.startIndex * slotHeight}px`;
-          card.style.height = `${(block.endIndex - block.startIndex) * slotHeight}px`;
+          card.style.top = `${((block.startMinutes - dayStartMinutes) / slotMinutes) * slotHeight}px`;
+          card.style.height = `${((block.endMinutes - block.startMinutes) / slotMinutes) * slotHeight}px`;
           card.style.left = `${(block.lane / block.totalLanes) * 100}%`;
           card.style.width = `${(block.spanLanes / block.totalLanes) * 100}%`;
 
@@ -451,7 +473,18 @@
 
           const text = document.createElement("span");
           text.className = "schedule-card-text";
-          text.textContent = block.person;
+
+          const nameText = document.createElement("span");
+          nameText.className = "schedule-card-name";
+          nameText.textContent = block.person;
+          text.appendChild(nameText);
+
+          if (block.course) {
+            const courseText = document.createElement("span");
+            courseText.className = "schedule-card-course";
+            courseText.textContent = block.course;
+            text.appendChild(courseText);
+          }
 
           inner.appendChild(text);
 
@@ -468,19 +501,31 @@
       updateCurrentTimeState();
     }
 
+    function parseTimeLabel(label) {
+      const [timePart, meridiem] = label.trim().split(" ");
+      const [rawHour, rawMinute] = timePart.split(":").map(Number);
+      let hour = rawHour % 12;
+
+      if (meridiem === "PM") {
+        hour += 12;
+      }
+
+      return hour * 60 + rawMinute;
+    }
+
     function assignLanes(blocks) {
       const results = [];
       let currentGroup = [];
       let currentGroupEnd = -1;
 
       blocks.forEach((block, index) => {
-        if (currentGroup.length === 0 || block.startIndex < currentGroupEnd) {
+        if (currentGroup.length === 0 || block.startMinutes < currentGroupEnd) {
           currentGroup.push({ ...block });
-          currentGroupEnd = Math.max(currentGroupEnd, block.endIndex);
+          currentGroupEnd = Math.max(currentGroupEnd, block.endMinutes);
         } else {
           results.push(...layoutGroup(currentGroup));
           currentGroup = [{ ...block }];
-          currentGroupEnd = block.endIndex;
+          currentGroupEnd = block.endMinutes;
         }
 
         if (index === blocks.length - 1 && currentGroup.length > 0) {
@@ -495,13 +540,13 @@
       const lanes = [];
 
       group.forEach((block) => {
-        let laneIndex = lanes.findIndex((laneEnd) => laneEnd <= block.startIndex);
+        let laneIndex = lanes.findIndex((laneEnd) => laneEnd <= block.startMinutes);
 
         if (laneIndex === -1) {
           laneIndex = lanes.length;
-          lanes.push(block.endIndex);
+          lanes.push(block.endMinutes);
         } else {
-          lanes[laneIndex] = block.endIndex;
+          lanes[laneIndex] = block.endMinutes;
         }
 
         block.lane = laneIndex;
@@ -517,8 +562,8 @@
             (other) =>
               other !== block &&
               other.lane === nextLane &&
-              other.startIndex < block.endIndex &&
-              other.endIndex > block.startIndex
+              other.startMinutes < block.endMinutes &&
+              other.endMinutes > block.startMinutes
           );
 
           if (hasConflict) {
@@ -587,7 +632,7 @@
     function getCurrentSlotIndex(minutes) {
       const startMinutes = dayStartHour * 60;
 
-      if (minutes < startMinutes || minutes >= dayEndHour * 60) {
+      if (minutes < startMinutes || minutes >= dayEndMinutes) {
         return -1;
       }
 
@@ -612,7 +657,7 @@
         line.remove();
       });
 
-      if (!days.includes(currentDay) || currentMinutes < dayStartHour * 60 || currentMinutes > dayEndHour * 60) {
+      if (!days.includes(currentDay) || currentMinutes < dayStartHour * 60 || currentMinutes > dayEndMinutes) {
         return;
       }
 
