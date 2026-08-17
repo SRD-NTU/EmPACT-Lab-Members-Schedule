@@ -48,6 +48,10 @@ const schedules = [
   { person: "Du", day: "Wednesday", start: "6:30 PM", end: "9:20 PM", course: "EE6427" },
   { person: "Du", day: "Thursday", start: "9:30 AM", end: "11:20 AM", course: "HWG703" },
   { person: "Du", day: "Friday", start: "6:30 PM", end: "9:20 PM", course: "CE6190" },
+  { person: "Quitian", day: "Tuesday", start: "6:30 PM", end: "9:20 PM", course: "EE6407" },
+  { person: "Quitian", day: "Wednesday", start: "6:30 PM", end: "9:20 PM", course: "EE6427" },
+  { person: "Quitian", day: "Thursday", start: "7:00 PM", end: "9:50 PM", course: "EE6483" },
+  { person: "Quitian", day: "Friday", start: "7:00 PM", end: "8:50 PM", course: "EE6405" },
   { person: "Jiayi", day: "Wednesday", start: "6:30 PM", end: "9:20 PM", course: "EE6221" },
   { person: "Jiayi", day: "Friday", start: "6:30 PM", end: "9:20 PM", course: "CE6190" },
   { person: "Shriram", day: "Thursday", start: "10:00 AM", end: "1:00 PM", course: "CE7457" },
@@ -65,6 +69,7 @@ const personColors = {
   Like: { background: "#fee2e2", border: "#dc2626" },
   Shriram: { background: "#cffafe", border: "#0f766e" },
   Du: { background: "#ffedd5", border: "#ea580c" },
+  Quitian: { background: "#ecfccb", border: "#65a30d" },
   Jiayi: { background: "#e0f2fe", border: "#0369a1" }
 };
 
